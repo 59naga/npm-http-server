@@ -1,9 +1,9 @@
 # bundler
 
-To build run:
+To run:
 
 ```
-npm run build 
+npm install
 ```
 
 Inside a docker enabled cli
