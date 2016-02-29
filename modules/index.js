@@ -70,12 +70,14 @@ function getMaxAge(packageVersion) {
   return OneYear
 }
 
-const ResolveExtensions = [ '', '.js', '.json' ]
+const ResolveExtensions = [ '', '.js', '.json', '.html' ]
 
 /**
- * Resolves a path like "lib/index" into "lib/index.js" or
- * "lib/index.json" depending on which one is available, similar
+ * Resolves a path like "lib/index" into "lib/index[.ResolveExtension]"
+ * depending on which one is available, similar
  * to how require('lib/index') does.
+ *
+ * In addition, resolves a path like "lib" into "lib/index[.ResolveExtension]".
  */
 function resolveFile(file, callback) {
   ResolveExtensions.reduceRight(function (next, ext) {
@@ -83,6 +85,8 @@ function resolveFile(file, callback) {
       statFile(file + ext, function (error, stat) {
         if (stat && stat.isFile()) {
           callback(null, file + ext)
+        } else if (stat && stat.isDirectory()) {
+          resolveFile(joinPaths(file, 'index'), callback)
         } else if (error && error.code !== 'ENOENT') {
           callback(error)
         } else {
